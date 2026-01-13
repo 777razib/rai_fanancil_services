@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../financial calculators/screen/financial_calculators_screen.dart';
+import '../financial calculators/base ui/screen/financial_calculators_screen.dart';
 import '../home/screen/home_screen.dart';
 import '../profile/my_profile/view/My_profile_view.dart';
 import '../property/screen/bookings_screen.dart';

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
-
-import '../../../../core/themes/app_colors.dart';
-import '../cash flow calculator/screen/cash_flow_calculator_screen.dart';
+import '../../../../../core/themes/app_colors.dart';
+import '../../cash flow calculator/screen/cash_flow_calculator_screen.dart';
 import '../widget/financial_calculators_body_widget.dart';
 
 class FinancialCalculatorsScreen extends StatelessWidget {
