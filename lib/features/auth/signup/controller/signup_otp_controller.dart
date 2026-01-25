@@ -8,6 +8,8 @@ import '../../../../core/network_caller/network_config.dart';
 import '../../../../core/network_path/natwork_path.dart';
 import '../../../../core/services_class/shared_preferences_helper.dart';
 import '../../../../core/services_class/shared_preferences_data_helper.dart';
+import '../../../user/financial data collection/view/set_up_your_financial_profile.dart';
+import '../../../user/user navbar/user_navbar_screen.dart';
 import '../../text editing controller/custom_text_editing_controller.dart';
 
 class SignupOtpController extends GetxController {
@@ -128,6 +130,23 @@ class SignupOtpController extends GetxController {
         
         isLoading.value = false;
         developer.log("OTP verification SUCCESSFUL", name: 'SignupOtpController');
+
+        final bool isFinancialProfileCompletes = data['isFinancialProfileComplete'] == true;
+        if (!isFinancialProfileCompletes) {
+          _errorMessage = 'Field not verified';
+          Get.snackbar(
+            "Field not verified",
+            "Please verify your field",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(() => SetUpYourFinancialProfile());
+          return false;
+        }else{
+          Get.offAll(()=>UserBottomNavbar());
+        }
+
         return true;
       } else {
         final message = response.responseData?['message']?.toString() ?? 
