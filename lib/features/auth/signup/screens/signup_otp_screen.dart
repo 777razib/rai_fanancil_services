@@ -40,6 +40,7 @@ class _SignupOtpScreenState extends State<SignupOtpScreens> { // Fixed class nam
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         leading: Padding(
           padding: const EdgeInsets.all(6.0),
           child: Container(
@@ -218,6 +219,8 @@ class _SignupOtpScreenState extends State<SignupOtpScreens> { // Fixed class nam
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: CustomFloatingButton(
+                      customBackgroundColor: AppColors.primary,
+                      textColors: Colors.white,
                       onPressed: () => _handleVerifyOtp(),
                       buttonText: 'Verify & Continue'.tr,
                       height: 50.0,

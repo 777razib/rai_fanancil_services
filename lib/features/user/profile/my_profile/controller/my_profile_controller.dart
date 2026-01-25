@@ -10,6 +10,9 @@ import '../../../../../core/services_class/shared_preferences_data_helper.dart';
 import '../../../../../core/services_class/shared_preferences_helper.dart';
 import '../../../../auth/model/user_model.dart';
 import '../../../../auth/signin/screens/signin_screens.dart';
+import '../../../../auth/signup/screens/signup_otp_screen.dart';
+import '../../../financial data collection/view/set_up_your_financial_profile.dart';
+import '../../../user navbar/user_navbar_screen.dart';
 
 class ProfileApiController extends GetxController {
   final Rx<UserModel> userProfile = UserModel().obs;
@@ -31,6 +34,32 @@ class ProfileApiController extends GetxController {
       if (response.isSuccess) {
         final data = response.responseData?['data'] ?? response.responseData ?? {};
         userProfile.value = UserModel.fromJson(data);
+
+        final bool emailVerified = data['emailVerification'] == true;
+        final bool isFinancialProfileCompletes = data['isFinancialProfileComplete'] == true;
+        if (!emailVerified) {
+          Get.snackbar(
+            "Email not verified",
+            "Please verify your email ",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(() => SignupOtpScreens());
+          return ;
+        }else if(emailVerified && !isFinancialProfileCompletes){
+          Get.snackbar(
+            "Field not verified",
+            "Please verify your field",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(()=>SetUpYourFinancialProfile());
+        }else{
+          Get.offAll(()=>UserBottomNavbar());
+        }
+
       } else {
         errorMessage.value = response.errorMessage ?? 'Failed to load profile';
         if (response.statusCode == 401) Get.offAllNamed('/login');

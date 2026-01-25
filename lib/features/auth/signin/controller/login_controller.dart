@@ -4,6 +4,8 @@ import '../../../../core/network_caller/network_config.dart';
 import '../../../../core/network_path/natwork_path.dart';
 import '../../../../core/services_class/shared_preferences_data_helper.dart';
 import '../../../../core/services_class/shared_preferences_helper.dart';
+import '../../../user/financial data collection/view/set_up_your_financial_profile.dart';
+import '../../../user/user navbar/user_navbar_screen.dart';
 import '../../model/user_model.dart';
 import '../../signup/screens/signup_otp_screen.dart';
 import '../../text editing controller/custom_text_editing_controller.dart';
@@ -41,21 +43,6 @@ class LoginApiController extends GetxController {
           return false;
         }
 
-        // If server says email not verified, route to OTP flow
-        final bool emailVerified = data['emailVerification'] == true;
-        if (!emailVerified) {
-          _errorMessage = 'Email not verified';
-          Get.snackbar(
-            "Email not verified",
-            "Please verify your email",
-            backgroundColor: Colors.redAccent,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-          );
-          Get.to(() => SignupOtpScreens());
-          return false;
-        }
-
         // Build minimal user model from login response (API doesn't return full user object)
         userModel = UserModel(
           id: data['userId']?.toString(),
@@ -74,6 +61,35 @@ class LoginApiController extends GetxController {
 
         _errorMessage = null;
         isSuccess = true;
+
+        // If server says email not verified, route to OTP flow
+        final bool emailVerified = data['emailVerification'] == true;
+        final bool isFinancialProfileCompletes = data['isFinancialProfileComplete'] == true;
+        if (!emailVerified) {
+          _errorMessage = 'Email  not verified';
+          Get.snackbar(
+            "Email not verified",
+            "Please verify your email ",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(() => SignupOtpScreens());
+          return false;
+        }else if(emailVerified && !isFinancialProfileCompletes){
+          _errorMessage = 'Field not verified';
+          Get.snackbar(
+            "Field not verified",
+            "Please verify your field",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          Get.to(()=>SetUpYourFinancialProfile());
+        }else{
+          Get.offAll(()=>UserBottomNavbar());
+        }
+
         update();
       } else {
         _errorMessage = response.errorMessage ??

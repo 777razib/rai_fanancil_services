@@ -1,17 +1,26 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:rai_fanancil_services/features/user/profile/my_profile/controller/my_profile_controller.dart';
 import '../../../core/services_class/shared_preferences_helper.dart';
 import '../../onboarding/onboarding_screen.dart';
 import '../../user/user navbar/user_navbar_screen.dart';
 class SplashController extends GetxController {
   var currentSplash = 1.obs;
+final ProfileApiController profileApiController=Get.put(ProfileApiController());
 
   @override
   void onInit() {
     super.onInit();
     startSplashSequence();
   }
+
+  Future<void> changeSplash() async {
+    return await Future.delayed(const Duration(seconds: 1), () {
+      profileApiController.getProfile();
+    });
+  }
+
   Future<void> checkIsLogin() async {
     // 1. Wait for login status
     bool? isLogin = await SharedPreferencesHelper.checkLogin(); // <-- await + ()
@@ -29,9 +38,12 @@ class SplashController extends GetxController {
 
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       String? role = decodedToken['role'];
+      //final bool emailVerified = data['emailVerification'] == true;
+      //final bool isFinancialProfileCompletes = data['isFinancialProfileComplete'] == true;
 
       if (role == 'User') {
-        Get.offAll(() =>  UserBottomNavbar());
+        return changeSplash();
+        //Get.offAll(() =>  UserBottomNavbar());
       } /*else if (role == 'Host') {
         //Get.offAll(() => HostOwnerSplashScreen());
       }*/ else {
