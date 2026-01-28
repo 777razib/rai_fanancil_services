@@ -1,3 +1,4 @@
+/*
 import 'package:get/Get.dart';
 import 'package:rai_fanancil_services/features/user/financial%20data%20collection/controller/property_details_controller.dart';
 import 'package:rai_fanancil_services/features/user/financial%20data%20collection/controller/tax_region_state_dropdown_controller.dart';
@@ -154,4 +155,4 @@ final Property cult= Property();
 
     return isSuccess;
   }
-}
+}*/
