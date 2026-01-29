@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 customBackgroundColor: AppColors.primary,
                 textColors: AppColors.white,
                 onPressed:(){
-                  Get.offAll(()=>UserBottomNavbar());
+                  Get.to(()=> SetUpYourFinancialProfile());
                 }, // _apiCallButton,
                 buttonText: 'Log in',
                  

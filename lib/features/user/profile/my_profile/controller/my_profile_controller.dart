@@ -29,13 +29,13 @@ class ProfileApiController extends GetxController {
   Future<void> getProfile() async {
     isLoading.value = true;
     errorMessage.value = '';
-    try {
-      final response = await NetworkCall.getRequest(url: Urls.getUserDataUrl);
+   /* try {
+   final response = await NetworkCall.getRequest(url: Urls.getUserDataUrl);
       if (response.isSuccess) {
         final data = response.responseData?['data'] ?? response.responseData ?? {};
         userProfile.value = UserModel.fromJson(data);
 
-        /*final bool emailVerified = data['emailVerification'] == true;
+        *//*final bool emailVerified = data['emailVerification'] == true;
         final bool isFinancialProfileCompletes = data['isFinancialProfileComplete'] == true;
         if (!emailVerified) {
           Get.snackbar(
@@ -58,17 +58,17 @@ class ProfileApiController extends GetxController {
           Get.to(()=>SetUpYourFinancialProfile());
         }else{
           Get.offAll(()=>UserBottomNavbar());
-        }*/
+        }*//*
 
       } else {
         errorMessage.value = response.errorMessage ?? 'Failed to load profile';
-        if (response.statusCode == 401) Get.offAllNamed('/login');
+        //if (response.statusCode == 401) Get.offAllNamed('/login');
       }
     } catch (e) {
       errorMessage.value = 'Network error: $e';
     } finally {
       isLoading.value = false;
-    }
+    }*/
   }
 
   // lib/feature/profile/controllers/profile_controller.dart
