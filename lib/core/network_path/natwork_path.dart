@@ -54,4 +54,6 @@ class Urls {
   static const String userDashboard = '$_baseUrl/dashboard/user-dashboard';
   static String userCashFlowTrend(String? year) =>
       '$_baseUrl/dashboard/user-cashflow-trend?year=$year';
+  static String userPropertyValueTrend(String? year) =>
+      '$_baseUrl/dashboard/user-property-value-trend?year=$year';
 }

@@ -73,6 +73,35 @@ class HomeDashboardController extends GetxController {
     }
   }
 
+  final propertyValueData = <Datum>[].obs;
+  Future<void> propertyValueTrend() async {
+    isLoading.value = true;
+    try {
+      final response = await networkCaller.getRequest(
+        Urls.userPropertyValueTrend('2026'),
+        token: token,
+      );
+
+      log(response.responseData.toString());
+      if (response.statusCode == 200 || response.isSuccess) {
+        final List list = response.responseData as List;
+
+        final parsed = list
+            .map((e) => Datum.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        cashFlowTrendData.assignAll(parsed);
+      } else {
+        // showError(response.errorMessage);
+      }
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  
+
   @override
   void onClose() {
     super.onClose();
