@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/network_caller/network_config.dart';
+import '../../model/user_model.dart';
+
 
 class ResendOTPController extends GetxController {
   String? _errorMessage;
@@ -64,4 +67,5 @@ class ResendOTPController extends GetxController {
     update();
     return isSuccess;
   }
-}*/
+}
+*/

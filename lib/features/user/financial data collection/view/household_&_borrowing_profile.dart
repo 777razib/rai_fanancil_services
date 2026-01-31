@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/Get.dart';
 import 'package:rai_fanancil_services/core/themes/app_colors.dart';
+import '../controller/set_up_your_financial_profile_controller.dart';
 import '../widget/custom_app_bar_set_before_nave_bar.dart';
 import '../widget/how_many_borrowing_adults_widget.dart';
 import '../widget/how_many_borrowing_dependents_widget.dart';
@@ -15,7 +16,6 @@ class HouseholdBorrowingProfile extends StatelessWidget {
       backgroundColor: AppColors.white,
       body: Column(
         children: [
-
           //-------------header part------------------
           CustomAppBarSetBeforeNaveBar(
             title: "Household & Borrowing Profile",
@@ -29,19 +29,9 @@ class HouseholdBorrowingProfile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Column(
                 children: [
-                  BorrowingAdultsForm(
-                    minAdults: 0,
-                    maxAdults: 8,
-                    borderRadius: 16,
-                    padding: const EdgeInsets.all(20),
-                  ),
+                  HowManyBorrowingAdultsWidget(),
                   SizedBox(height: 12),
-                  BorrowingDependentsForm(
-                    minAdults: 0,
-                    maxAdults: 8,
-                    borderRadius: 16,
-                    padding: const EdgeInsets.all(20),
-                  ),
+                  HowManyBorrowingDependentsWidget(),
                 ],
               ),
             ),
@@ -62,16 +52,25 @@ class HouseholdBorrowingProfile extends StatelessWidget {
             ),
             child: ElevatedButton(
               onPressed: () {
-                Get.to(()=>IncomeDetailsScreen());
-                // TODO: Start setup flow / navigation
+                final controller = Get.put(SetUpYourFinancialProfileController());
+                if (controller.validateAdultsData()) {
+                  Get.to(() => IncomeDetailsScreen());
+                } else {
+                  Get.snackbar(
+                    "Error",
+                    "Please fill all adult details",
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,
-                elevation: 5, // shadow already on container
+                elevation: 5,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0), // ← modern look (change to 0 if you want sharp)
+                  borderRadius: BorderRadius.circular(0),
                 ),
                 textStyle: const TextStyle(
                   fontSize: 16,

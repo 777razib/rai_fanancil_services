@@ -29,13 +29,13 @@ class ProfileApiController extends GetxController {
   Future<void> getProfile() async {
     isLoading.value = true;
     errorMessage.value = '';
-   /* try {
+    try {
    final response = await NetworkCall.getRequest(url: Urls.getUserDataUrl);
       if (response.isSuccess) {
         final data = response.responseData?['data'] ?? response.responseData ?? {};
         userProfile.value = UserModel.fromJson(data);
 
-        *//*final bool emailVerified = data['emailVerification'] == true;
+        final bool emailVerified = data['emailVerification'] == true;
         final bool isFinancialProfileCompletes = data['isFinancialProfileComplete'] == true;
         if (!emailVerified) {
           Get.snackbar(
@@ -57,8 +57,8 @@ class ProfileApiController extends GetxController {
           );
           Get.to(()=>SetUpYourFinancialProfile());
         }else{
-          Get.offAll(()=>UserBottomNavbar());
-        }*//*
+          //Get.offAll(()=>UserBottomNavbar());
+        }
 
       } else {
         errorMessage.value = response.errorMessage ?? 'Failed to load profile';
@@ -68,7 +68,7 @@ class ProfileApiController extends GetxController {
       errorMessage.value = 'Network error: $e';
     } finally {
       isLoading.value = false;
-    }*/
+    }
   }
 
   // lib/feature/profile/controllers/profile_controller.dart
@@ -158,7 +158,7 @@ class ProfileApiController extends GetxController {
         final token = await SharedPreferencesHelper.getAccessToken();
         print("-----------$token");
         await SharedPreferencesHelper.clearAllData();
-        //Get.offAll(() => LoginScreen());
+        Get.offAll(() => LoginScreen());
         Get.snackbar('Success', 'Account deleted successfully.',
             backgroundColor: Colors.green, colorText: Colors.white);
         return true;
