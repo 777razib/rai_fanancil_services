@@ -33,6 +33,16 @@ class SavedPropertiesController extends GetxController {
       );
       log(response.responseData.toString());
       if (response.statusCode == 200 || response.isSuccess) {
+        final List list = response.responseData as List;
+
+        final parsed = list
+            .map(
+              (e) =>
+                  UserSavedPropertiesDetum.fromJson(e as Map<String, dynamic>),
+            )
+            .toList();
+
+        savedPropertiesData.assignAll(parsed);
       } else {}
     } catch (e) {
       log(e.toString());

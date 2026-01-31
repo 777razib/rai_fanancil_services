@@ -16,6 +16,7 @@ class PropertyScreen extends StatelessWidget {
         },
         color: AppColors.primary,
         child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -67,37 +68,69 @@ class PropertyScreen extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    ListView.builder(
-                      primary: false, // ✅ FIX
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 10,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: SearchScreenBodyWidget(
-                            image:
-                                "https://i.postimg.cc/bJKgPdZg/Image-(128-Park-Avenue).png",
-                            baths: "3",
-                            beds: "4",
-                            location: "128 Park Avenue, Melbourne, VIC",
-                            price: "950,000",
-                            leftButtonText: '*Remove',
-                            leftTextColor: AppColors.warningSecondary,
-                            onTapAddProperty: () {},
-                            borderColorLeft: AppColors.warningSecondary,
-                            rightButtonText: 'Use in Calculator',
-                            rightTextColor: AppColors.white,
-                            onTapUseInCalculator: () {},
-                            borderColorRight: AppColors.primary,
-                          ),
-                        );
-                      },
+                child: RefreshIndicator(
+                  onRefresh: () {
+                    return savedPropertiesController.refreshData();
+                  },
+                  color: AppColors.primary,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        Obx(() {
+                          if (savedPropertiesController.isLoading.value) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (savedPropertiesController
+                              .savedPropertiesData
+                              .isEmpty) {
+                            return const Center(
+                              child: Text("No saved properties found"),
+                            );
+                          }
+
+                          return ListView.builder(
+                            primary: false,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: savedPropertiesController
+                                .savedPropertiesData
+                                .length,
+                            itemBuilder: (context, index) {
+                              final item = savedPropertiesController
+                                  .savedPropertiesData[index];
+                              final property = item.propertyListing;
+
+                              return Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: SearchScreenBodyWidget(
+                                  image: property?.images?.isNotEmpty == true
+                                      ? property!.images!.first
+                                      : "",
+                                  baths: property?.bathrooms?.toString() ?? "0",
+                                  beds: property?.bedrooms?.toString() ?? "0",
+                                  location:
+                                      "${property?.address ?? ""}, ${property?.state ?? ""}",
+                                  price: property?.price?.toString() ?? "0",
+                                  leftButtonText: 'Remove',
+                                  leftTextColor: AppColors.warningSecondary,
+                                  onTapAddProperty: () {},
+                                  borderColorLeft: AppColors.warningSecondary,
+                                  rightButtonText: 'Use in Calculator',
+                                  rightTextColor: AppColors.white,
+                                  onTapUseInCalculator: () {},
+                                  borderColorRight: AppColors.primary,
+                                ),
+                              );
+                            },
+                          );
+                        }),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
