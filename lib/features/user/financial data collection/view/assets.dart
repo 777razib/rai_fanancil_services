@@ -4,16 +4,12 @@ import 'package:rai_fanancil_services/core/themes/app_colors.dart';
 import '../../../../core/widgets/custom_input_field_widget.dart';
 import '../widget/custom_app_bar_set_before_nave_bar.dart';
 import 'liabilities.dart';
-import '../controller/saving_accounts_controller.dart'; // ✅ add this
+import '../controller/set_up_your_financial_profile_controller.dart';
 
 class AssetsScreen extends StatelessWidget {
   AssetsScreen({super.key});
 
-  // ✅ controller for saving accounts list
-  final SavingAccountsController savingCtrl = Get.put(SavingAccountsController());
-
-  // (তোমার অন্যান্য asset field গুলো যদি single value হয়, আলাদা controller রাখতে পারো)
-  final TextEditingController propertyController = TextEditingController();
+  final SetUpYourFinancialProfileController mainCtrl = Get.find<SetUpYourFinancialProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +40,8 @@ class AssetsScreen extends StatelessWidget {
                         color: AppColors.primaryDife,
                         borderRadius: BorderRadius.circular(0),
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -59,14 +55,14 @@ class AssetsScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 4),
-                            Text(
-                              "\$ 0",
+                            Obx(() => Text(
+                              "\$ ${mainCtrl.totalAssets.value.toStringAsFixed(2)}",
                               style: TextStyle(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 30,
                                 color: Colors.white,
                               ),
-                            ),
+                            )),
                           ],
                         ),
                       ),
@@ -88,9 +84,9 @@ class AssetsScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 16),
 
-                        // ✅ clickable add account (UI same, just wrapped)
+                        // Add account button
                         GestureDetector(
-                          onTap: savingCtrl.addAccount,
+                          onTap: mainCtrl.addSavingAccount,
                           child: Text(
                             "+ Add account",
                             style: TextStyle(
@@ -105,11 +101,11 @@ class AssetsScreen extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    // ✅ ONLY this part will duplicate (Saving account cards)
+                    // Saving account cards
                     Obx(() {
                       return Column(
                         children: List.generate(
-                          savingCtrl.accounts.length,
+                          mainCtrl.savingAccounts.length,
                               (index) => _savingAccountCard(index),
                         ),
                       );
@@ -137,6 +133,8 @@ class AssetsScreen extends StatelessWidget {
             ),
             child: ElevatedButton(
               onPressed: () {
+                // Update assets list before navigating
+                mainCtrl.updateAssetsList();
                 Get.to(() => LiabilitiesScreen());
               },
               style: ElevatedButton.styleFrom(
@@ -159,9 +157,8 @@ class AssetsScreen extends StatelessWidget {
     );
   }
 
-  // ✅ same UI, but controllers are per-account
   Widget _savingAccountCard(int index) {
-    final acc = savingCtrl.accounts[index];
+    final acc = mainCtrl.savingAccounts[index];
 
     return Column(
       children: [
@@ -178,7 +175,7 @@ class AssetsScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Saving Account ${index + 1}", // ✅ i++
+                      "Saving Account ${index + 1}",
                       style: TextStyle(
                         color: AppColors.black,
                         fontSize: 22,
@@ -186,7 +183,7 @@ class AssetsScreen extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => savingCtrl.removeAccount(index),
+                      onPressed: () => mainCtrl.removeSavingAccount(index),
                       icon: Icon(Icons.delete, color: AppColors.red),
                     )
                   ],
@@ -207,6 +204,7 @@ class AssetsScreen extends StatelessWidget {
                   controller: acc.bankName,
                   keyboardType: TextInputType.text,
                   hintText: "e.g., Commonwealth Bank",
+                  onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
                 ),
 
                 const SizedBox(height: 8),
@@ -224,6 +222,7 @@ class AssetsScreen extends StatelessWidget {
                   controller: acc.accountNo,
                   keyboardType: TextInputType.number,
                   hintText: "e.g., 123456789",
+                  onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
                 ),
 
                 const SizedBox(height: 8),
@@ -240,6 +239,7 @@ class AssetsScreen extends StatelessWidget {
                   controller: acc.accountType,
                   keyboardType: TextInputType.text,
                   hintText: "e.g., Savings Account",
+                  onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
                 ),
 
                 const SizedBox(height: 8),
@@ -257,27 +257,26 @@ class AssetsScreen extends StatelessWidget {
                   controller: acc.interestRate,
                   keyboardType: TextInputType.number,
                   hintText: "e.g., 4.5",
+                  onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
                 ),
               ],
             ),
           ),
         ),
         const SizedBox(height: 8),
-        _cashAndSavingsCard(),
+        _cashAndSavingsCard(acc),
         const SizedBox(height: 8),
-        _investmentsCard(),
+        _investmentsCard(acc),
         const SizedBox(height: 8),
-        _superannuationCard(),
+        _superannuationCard(acc),
         const SizedBox(height: 8),
-        _otherAssetsCard(),
+        _otherAssetsCard(acc),
         const SizedBox(height: 8),
       ],
     );
   }
 
-  // ---- below cards are unchanged (just moved into methods to keep clean) ----
-
-  Widget _cashAndSavingsCard() {
+  Widget _cashAndSavingsCard(SavingAccountForm acc) {
     return Card(
       elevation: 5,
       color: AppColors.white,
@@ -322,7 +321,7 @@ class AssetsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Bank Name",
+                      acc.bankName.text.isEmpty ? "Bank Name" : acc.bankName.text,
                       style: TextStyle(
                         color: AppColors.grey,
                         fontSize: 16,
@@ -336,9 +335,10 @@ class AssetsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             CustomInputField(
               prefixIcon: const Icon(Icons.monetization_on_outlined),
-              controller: propertyController,
+              controller: acc.cashSaving,
               keyboardType: TextInputType.number,
               hintText: "0",
+              onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
             ),
           ],
         ),
@@ -346,7 +346,7 @@ class AssetsScreen extends StatelessWidget {
     );
   }
 
-  Widget _investmentsCard() {
+  Widget _investmentsCard(SavingAccountForm acc) {
     return Card(
       elevation: 5,
       color: AppColors.white,
@@ -405,9 +405,10 @@ class AssetsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             CustomInputField(
               prefixIcon: const Icon(Icons.monetization_on_outlined),
-              controller: propertyController,
+              controller: acc.investment,
               keyboardType: TextInputType.number,
               hintText: "0",
+              onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
             ),
           ],
         ),
@@ -415,7 +416,7 @@ class AssetsScreen extends StatelessWidget {
     );
   }
 
-  Widget _superannuationCard() {
+  Widget _superannuationCard(SavingAccountForm acc) {
     return Card(
       elevation: 5,
       color: AppColors.white,
@@ -474,9 +475,10 @@ class AssetsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             CustomInputField(
               prefixIcon: const Icon(Icons.monetization_on_outlined),
-              controller: propertyController,
+              controller: acc.superannuation,
               keyboardType: TextInputType.number,
               hintText: "0",
+              onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
             ),
           ],
         ),
@@ -484,7 +486,7 @@ class AssetsScreen extends StatelessWidget {
     );
   }
 
-  Widget _otherAssetsCard() {
+  Widget _otherAssetsCard(SavingAccountForm acc) {
     return Card(
       elevation: 5,
       color: AppColors.white,
@@ -543,9 +545,10 @@ class AssetsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             CustomInputField(
               prefixIcon: const Icon(Icons.monetization_on_outlined),
-              controller: propertyController,
+              controller: acc.otherAssets,
               keyboardType: TextInputType.number,
               hintText: "0",
+              onChanged: (_) => mainCtrl.onSavingAccountFieldChanged(),
             ),
           ],
         ),

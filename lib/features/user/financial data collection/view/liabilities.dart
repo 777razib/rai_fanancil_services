@@ -4,6 +4,7 @@ import 'package:rai_fanancil_services/core/themes/app_colors.dart';
 import '../../../../core/widgets/custom_input_field_widget.dart';
 import '../../user navbar/user_navbar_screen.dart';
 import '../widget/custom_app_bar_set_before_nave_bar.dart';
+import '../controller/set_up_your_financial_profile_controller.dart';
 
 class LiabilitiesScreen extends StatefulWidget {
   const LiabilitiesScreen({super.key});
@@ -13,10 +14,7 @@ class LiabilitiesScreen extends StatefulWidget {
 }
 
 class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
-  // Separate lists for each section
-  final List<LoanModel> _loans = [LoanModel()];
-  final List<CreditCardModel> _creditCards = [CreditCardModel()];
-  final List<SMSFModel> _smsfs = [SMSFModel()];
+  final SetUpYourFinancialProfileController controller = Get.find<SetUpYourFinancialProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -41,24 +39,47 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                     const SizedBox(height: 16),
 
                     // ── Loans ────────────────────────────────────────────────────────
-                    _buildSectionHeader("Loans", "+ Add Loan", _addNewLoan),
+                    _buildSectionHeader("Loans", "+ Add Loan", controller.addLoan),
                     const SizedBox(height: 16),
-                    ..._loans.asMap().entries.map((e) => _buildLoanCard(e.key, e.value)),
+                    Obx(() => Column(
+                      children: List.generate(
+                        controller.loans.length,
+                            (index) => _buildLoanCard(index, controller.loans[index]),
+                      ),
+                    )),
 
                     const SizedBox(height: 32),
-                    // ── Credit Cards ─────────────────────────────────────────────────
-                    _buildSectionHeader("Buy now pay later", "+Add others", _addNewCard),
+                    // ── Buy now pay later ────────────────────────────────────────────
+                    _buildSectionHeader("Buy now pay later", "+ Add others", controller.addBuyNowPayLater),
                     const SizedBox(height: 16),
-                    ..._creditCards.asMap().entries.map((e) => _buildByNowPayLater(e.key, e.value)),
+                    Obx(() => Column(
+                      children: List.generate(
+                        controller.buyNowPayLaters.length,
+                            (index) => _buildByNowPayLater(index, controller.buyNowPayLaters[index]),
+                      ),
+                    )),
+
                     // ── Credit Cards ─────────────────────────────────────────────────
-                    _buildSectionHeader("Credit Cards", "+ Add Card", _addNewCard),
+                    _buildSectionHeader("Credit Cards", "+ Add Card", controller.addCreditCard),
                     const SizedBox(height: 16),
-                    ..._creditCards.asMap().entries.map((e) => _buildCreditCardCard(e.key, e.value)),
+                    Obx(() => Column(
+                      children: List.generate(
+                        controller.creditCards.length,
+                            (index) => _buildCreditCardCard(index, controller.creditCards[index]),
+                      ),
+                    )),
+
                     const SizedBox(height: 16),
                     // ── SMSF ─────────────────────────────────────────────────────────
-                    _buildSectionHeader("SMSF", "+ Add SMSF", _addNewSMSF),
+                    _buildSectionHeader("SMSF", "+ Add SMSF", controller.addSMSF),
                     const SizedBox(height: 16),
-                    ..._smsfs.asMap().entries.map((e) => _buildSMSFCard(e.key, e.value)),
+                    Obx(() => Column(
+                      children: List.generate(
+                        controller.smsfs.length,
+                            (index) => _buildSMSFCard(index, controller.smsfs[index]),
+                      ),
+                    )),
+
                     const SizedBox(height:16),
                     _buildSectionHeader("HECS Debt", "", (){}),
                     const SizedBox(height: 16),
@@ -82,10 +103,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                             const SizedBox(height: 16),
                             CustomInputField(
                               prefixIcon: const Icon(Icons.monetization_on_outlined),
+                              controller: controller.hecsDebtController,
                               keyboardType: TextInputType.number,
                               hintText: "0",
+                              onChanged: (value) => controller.onHecsDebtChanged(value),
                             ),
-
                           ],
                         ),
                       ),
@@ -113,7 +135,10 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
             ),
             child: ElevatedButton(
               onPressed: () {
-                Get.offAll(()=>UserBottomNavbar());
+                // Update liabilities before saving
+                controller.updateLiabilitiesList();
+                // Submit financial profile
+                controller.submitFinancialProfile();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -175,7 +200,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 top: 0,
                 child: IconButton(
                   icon: Icon(Icons.delete, color: AppColors.red, size: 20),
-                  onPressed: () => _removeLoan(index),
+                  onPressed: () => controller.removeLoan(index),
                 ),
               ),
               Column(
@@ -183,10 +208,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 children: [
                   Text("Loan ${index + 1}", style: _titleStyle()),
                   const SizedBox(height: 16),
-                  _buildField("Bank Name", loan.bankNameController, "e.g., Commonwealth Bank", TextInputType.text),
-                  _buildField("Current Balance", loan.balanceController, "0", TextInputType.number, Icons.monetization_on_outlined),
-                  _buildField("Interest Rate (%)", loan.interestRateController, "0.00", TextInputType.numberWithOptions(decimal: true), Icons.percent),
-                  _buildField("Months Remaining", loan.monthsRemainingController, "0", TextInputType.number),
+                  _buildField("Bank Name", loan.bankNameController, "e.g., Commonwealth Bank", TextInputType.text, null, controller.onLiabilityFieldChanged),
+                  _buildField("Current Balance", loan.balanceController, "0", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Interest Rate (%)", loan.interestRateController, "0.00", TextInputType.numberWithOptions(decimal: true), Icons.percent, controller.onLiabilityFieldChanged),
+                  _buildField("Monthly Payment", loan.monthlyPaymentController, "0", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Months Remaining", loan.monthsRemainingController, "0", TextInputType.number, null, controller.onLiabilityFieldChanged),
                 ],
               ),
             ],
@@ -213,7 +239,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 top: 0,
                 child: IconButton(
                   icon: Icon(Icons.delete, color: AppColors.red, size: 20),
-                  onPressed: () => _removeCard(index),
+                  onPressed: () => controller.removeCreditCard(index),
                 ),
               ),
               Column(
@@ -221,10 +247,10 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 children: [
                   Text("Card ${index + 1}", style: _titleStyle()),
                   const SizedBox(height: 16),
-                  _buildField("Bank", card.bankController, "e.g., ANZ", TextInputType.text),
-                  _buildField("Credit Limit", card.limitController, "0", TextInputType.number, Icons.monetization_on_outlined),
-                  _buildField("Current Balance", card.balanceController, "0.00", TextInputType.number, Icons.monetization_on_outlined),
-                  _buildField("Monthly Payment (%)", card.monthlyPaymentController, "What % do you pay each month?", TextInputType.number, Icons.calculate_sharp),
+                  _buildField("Bank", card.bankController, "e.g., ANZ", TextInputType.text, null, controller.onLiabilityFieldChanged),
+                  _buildField("Credit Limit", card.limitController, "0", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Current Balance", card.balanceController, "0.00", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Monthly Payment (%)", card.monthlyPaymentController, "What % do you pay each month?", TextInputType.number, Icons.calculate_sharp, controller.onLiabilityFieldChanged),
                 ],
               ),
             ],
@@ -234,8 +260,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
     );
   }
 
-  // ── Credit Card Card ─────────────────────────────────────────────────────────
-  Widget _buildByNowPayLater(int index, CreditCardModel card) {
+  // ── Buy Now Pay Later Card ───────────────────────────────────────────────────
+  Widget _buildByNowPayLater(int index, BuyNowPayLaterModel bnpl) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Card(
@@ -251,7 +277,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 top: 0,
                 child: IconButton(
                   icon: Icon(Icons.delete, color: AppColors.red, size: 20),
-                  onPressed: () => _removeCard(index),
+                  onPressed: () => controller.removeBuyNowPayLater(index),
                 ),
               ),
               Column(
@@ -259,10 +285,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 children: [
                   Text("Buy now pay later ${index + 1}", style: _titleStyle()),
                   const SizedBox(height: 16),
-                  _buildField("Bank", card.bankController, "e.g., ANZ", TextInputType.text),
-                  _buildField("Credit Limit", card.limitController, "0", TextInputType.number, Icons.monetization_on_outlined),
-                  _buildField("Current Balance", card.balanceController, "0.00", TextInputType.number, Icons.monetization_on_outlined),
-                  _buildField("Monthly Payment (%)", card.monthlyPaymentController, "What % do you pay each month?", TextInputType.number, Icons.calculate_sharp),
+                  _buildField("Bank", bnpl.bankController, "e.g., ANZ", TextInputType.text, null, controller.onLiabilityFieldChanged),
+                  _buildField("Current Balance", bnpl.balanceController, "0.00", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Interest Rate (%)", bnpl.interestRateController, "0", TextInputType.number, Icons.percent, controller.onLiabilityFieldChanged),
+                  _buildField("Monthly Payment", bnpl.monthlyPaymentController, "0", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Months Remaining", bnpl.monthsRemainingController, "0", TextInputType.number, null, controller.onLiabilityFieldChanged),
                 ],
               ),
             ],
@@ -289,7 +316,7 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 top: 0,
                 child: IconButton(
                   icon: Icon(Icons.delete, color: AppColors.red, size: 20),
-                  onPressed: () => _removeSMSF(index),
+                  onPressed: () => controller.removeSMSF(index),
                 ),
               ),
               Column(
@@ -297,10 +324,11 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
                 children: [
                   Text("SMSF ${index + 1}", style: _titleStyle()),
                   const SizedBox(height: 16),
-                  _buildField("Bank", sms.bankController, "e.g., Westpac", TextInputType.text),
-                  _buildField("Loan Balance", sms.balanceController, "0", TextInputType.number, Icons.monetization_on_outlined),
-                  _buildField("Rate (%)", sms.rateController, "0.00", TextInputType.numberWithOptions(decimal: true), Icons.percent),
-                  _buildField("Months Remaining", sms.monthsController, "0", TextInputType.number),
+                  _buildField("Bank", sms.bankController, "e.g., Westpac", TextInputType.text, null, controller.onLiabilityFieldChanged),
+                  _buildField("Loan Balance", sms.balanceController, "0", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Rate (%)", sms.rateController, "0.00", TextInputType.numberWithOptions(decimal: true), Icons.percent, controller.onLiabilityFieldChanged),
+                  _buildField("Monthly Amount", sms.monthlyAmountController, "0", TextInputType.number, Icons.monetization_on_outlined, controller.onLiabilityFieldChanged),
+                  _buildField("Months Remaining", sms.monthsController, "0", TextInputType.number, null, controller.onLiabilityFieldChanged),
                 ],
               ),
             ],
@@ -322,7 +350,8 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
       TextEditingController controller,
       String hint,
       TextInputType keyboardType,
-      [IconData? prefixIcon]
+      [IconData? prefixIcon,
+        VoidCallback? onChanged]
       ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,77 +370,12 @@ class _LiabilitiesScreenState extends State<LiabilitiesScreen> {
           controller: controller,
           hintText: hint,
           keyboardType: keyboardType,
+          onChanged: (value) {
+            if (onChanged != null) onChanged();
+          },
         ),
         const SizedBox(height: 16),
       ],
     );
-  }
-
-  // ── Add / Remove Functions ───────────────────────────────────────────────────
-  void _addNewLoan() => setState(() => _loans.add(LoanModel()));
-  void _removeLoan(int index) {
-    if (_loans.length > 1) setState(() => _loans.removeAt(index));
-  }
-
-  void _addNewCard() => setState(() => _creditCards.add(CreditCardModel()));
-  void _removeCard(int index) {
-    if (_creditCards.length > 1) setState(() => _creditCards.removeAt(index));
-  }
-
-  void _addNewSMSF() => setState(() => _smsfs.add(SMSFModel()));
-  void _removeSMSF(int index) {
-    if (_smsfs.length > 1) setState(() => _smsfs.removeAt(index));
-  }
-
-  @override
-  void dispose() {
-    for (var loan in _loans) loan.dispose();
-    for (var card in _creditCards) card.dispose();
-    for (var sms in _smsfs) sms.dispose();
-    super.dispose();
-  }
-}
-
-// ── Models ───────────────────────────────────────────────────────────────────
-
-class LoanModel {
-  final bankNameController = TextEditingController();
-  final balanceController = TextEditingController();
-  final interestRateController = TextEditingController();
-  final monthsRemainingController = TextEditingController();
-
-  void dispose() {
-    bankNameController.dispose();
-    balanceController.dispose();
-    interestRateController.dispose();
-    monthsRemainingController.dispose();
-  }
-}
-
-class CreditCardModel {
-  final bankController = TextEditingController();
-  final limitController = TextEditingController();
-  final balanceController = TextEditingController();
-  final monthlyPaymentController = TextEditingController();
-
-  void dispose() {
-    bankController.dispose();
-    limitController.dispose();
-    balanceController.dispose();
-    monthlyPaymentController.dispose();
-  }
-}
-
-class SMSFModel {
-  final bankController = TextEditingController();
-  final balanceController = TextEditingController();
-  final rateController = TextEditingController();
-  final monthsController = TextEditingController();
-
-  void dispose() {
-    bankController.dispose();
-    balanceController.dispose();
-    rateController.dispose();
-    monthsController.dispose();
   }
 }
