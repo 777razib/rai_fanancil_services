@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/themes/app_colors.dart';
@@ -31,9 +30,7 @@ class SearchingScreen extends StatelessWidget {
               width: double.infinity,
               child: Row(
                 children: [
-                  Expanded(
-                    child: SearchsWidget(),
-                  ),
+                  Expanded(child: SearchsWidget()),
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
@@ -69,13 +66,13 @@ class SearchingScreen extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 10,
+                itemCount: 1,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: SearchScreenBodyWidget(
                       image:
-                      "https://i.postimg.cc/bJKgPdZg/Image-(128-Park-Avenue).png",
+                          "https://i.postimg.cc/bJKgPdZg/Image-(128-Park-Avenue).png",
                       baths: "3",
                       beds: "4",
                       location: "128 Park Avenue, Melbourne, VIC",
@@ -92,7 +89,7 @@ class SearchingScreen extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 40,),
+              const SizedBox(height: 40),
             ],
           ),
         ),
