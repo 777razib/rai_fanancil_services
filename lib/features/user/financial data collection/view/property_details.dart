@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:rai_fanancil_services/core/themes/app_colors.dart';
 import '../../../../core/widgets/custom_input_field_widget.dart';
 import '../../financial calculators/property investment/widget/custom_button_widget.dart';
-import '../controller/property_details_controller.dart';
+import '../controller/set_up_your_financial_profile_controller.dart'; // Changed to unified controller
 import '../widget/custom_app_bar_set_before_nave_bar.dart';
 import '../widget/select_button_widget.dart';
 import 'assets.dart';
@@ -11,7 +11,7 @@ import 'assets.dart';
 class PropertyDetailsScreen extends StatelessWidget {
   PropertyDetailsScreen({super.key});
 
-  final PropertyController propertyController = Get.put(PropertyController());
+  final SetUpYourFinancialProfileController controller = Get.find<SetUpYourFinancialProfileController>(); // Changed to Get.find()
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +34,7 @@ class PropertyDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //-------------------Increment Addon Property-----------------
-                      for (
-                      int i = 0;
-                      i < propertyController.properties.length;
-                      i++
-                      )
+                      for (int i = 0; i < controller.properties.length; i++)
                         _buildPropertyCard(i),
                       const SizedBox(height: 12),
                       //-------------------Button-----------------
@@ -57,7 +53,7 @@ class PropertyDetailsScreen extends StatelessWidget {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            propertyController.addProperty();
+                            controller.addProperty(); // Changed to controller.addProperty()
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -97,7 +93,8 @@ class PropertyDetailsScreen extends StatelessWidget {
             ),
             child: ElevatedButton(
               onPressed: () {
-                // TODO: Validate all fields
+                // Update property details before navigating
+                controller.updatePropertyDetails();
                 Get.to(() => AssetsScreen());
               },
               style: ElevatedButton.styleFrom(
@@ -121,7 +118,7 @@ class PropertyDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildPropertyCard(int index) {
-    Property property = propertyController.properties[index];
+    final property = controller.properties[index]; // Changed to controller.properties
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -154,7 +151,11 @@ class PropertyDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 //-------------------Select Button-----------------
                 SelectButtonWidget(
-                  onSelected: (value) {}, // ← fixed: added empty function (or null)
+                  onSelected: (value) {
+                    if (value != null) {
+                      controller.updateProperty(index, propertyType: value);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -343,14 +344,7 @@ class PropertyDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 CustomInputField(
-                  controller:
-                  propertyController.properties.isNotEmpty
-                      ? propertyController
-                      .properties
-                      .last
-                      .loanTermController
-                      : TextEditingController(),
-                  // ← fixed: using correct controller
+                  controller: property.loanTermController, // Fixed: using correct property controller
                   keyboardType: TextInputType.text,
                   hintText: "0",
                 ),
@@ -365,14 +359,7 @@ class PropertyDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 CustomInputField(
-                  controller:
-                  propertyController.properties.isNotEmpty
-                      ? propertyController
-                      .properties
-                      .last
-                      .loanTermController
-                      : TextEditingController(),
-                  // ← fixed: using correct controller
+                  controller: TextEditingController(text: property.ioPeriodMonth.toString()), // Fixed: using correct controller
                   keyboardType: TextInputType.text,
                   hintText: "0",
                 ),
@@ -387,14 +374,7 @@ class PropertyDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 CustomInputField(
-                  controller:
-                  propertyController.properties.isNotEmpty
-                      ? propertyController
-                      .properties
-                      .last
-                      .loanTermController
-                      : TextEditingController(),
-                  // ← fixed: using correct controller
+                  controller: property.loanTermController, // Fixed: using correct property controller
                   keyboardType: TextInputType.text,
                   hintText: "0",
                 ),
@@ -431,17 +411,15 @@ class PropertyDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 CustomInputField(
+                  controller: property.monthlyRentalController, // Added controller
                   keyboardType: TextInputType.text,
                   hintText: "0",
                 ),
-
               ],
             ),
           ),
         ),
-
         SizedBox(height: 16),
-
       ],
     );
   }

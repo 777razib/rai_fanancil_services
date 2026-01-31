@@ -115,9 +115,10 @@ class _LoginScreenState extends State<LoginScreen> {
               CustomFloatingButton(
                 customBackgroundColor: AppColors.primary,
                 textColors: AppColors.white,
-                onPressed:(){
-                  Get.to(()=> SetUpYourFinancialProfile());
-                }, // _apiCallButton,
+                onPressed:  _apiCallButton,
+                  //(){
+                //   Get.to(()=> SetUpYourFinancialProfile());
+                // },
                 buttonText: 'Log in',
                  
               ),
@@ -174,10 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (isSuccess) {
       if (_loginCtrl.userModel?.role == 'User') {
-       Get.to(()=> UserBottomNavbar());
-      } /*else if (_loginCtrl.userModel?.role == 'Host') {
+        Get.to(()=> UserBottomNavbar());
+      } else if (_loginCtrl.userModel?.role == 'Host') {
         Get.to(()=> SetUpYourFinancialProfile());
-      }*/ else {
+      } else {
         Get.snackbar(
           "Login Failed",
           "Role did not match",

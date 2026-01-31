@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'features/get x dependency injection/get_x_dependency_injection.dart';
 import 'features/splash/splash_screen.dart';
+import 'features/user/financial data collection/view/set_up_your_financial_profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home:  SplashScreen(),
+        home:   SplashScreen(),//SetUpYourFinancialProfile(),
             builder: EasyLoading.init(), // Add this line
 
     );

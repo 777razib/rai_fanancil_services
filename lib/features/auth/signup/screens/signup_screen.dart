@@ -256,7 +256,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Obx(() => CustomFloatingButton(
                 customBackgroundColor: AppColors.primary,
                 textColors: AppColors.white,
-                onPressed: (){ Get.off(() => const SignupOtpScreens());},//_apiCallButton,
+                onPressed: _apiCallButton,//(){ Get.off(() => const SignupOtpScreens());},
                 buttonText: apiController.isLoading.value
                     ? 'Creating Account...'
                     : 'Sign Up',

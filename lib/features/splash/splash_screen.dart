@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../core/services_class/shared_preferences_helper.dart';
 import '../../core/themes/app_colors.dart';
 import '../onboarding/onboarding_screen.dart';
+import '../user/user navbar/user_navbar_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -61,12 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       // You can modify this part to handle role-based navigation
       if (isLoggedIn == true) {
-        if(role == "USER"){}
-         // Get.offAll(() => BuyerNavBar());
-        else if(role == "SELLER"){}
-        //  Get.offAll(() => SellerNavBar());
-        else if(role == "SERVICE_PROVIDER"){}
-         // Get.offAll(() => ServiceProviderNavBar());
+        Get.offAll(()=>UserBottomNavbar());
       } else {
         Get.offAll(() => OnboardingScreen());
       }
