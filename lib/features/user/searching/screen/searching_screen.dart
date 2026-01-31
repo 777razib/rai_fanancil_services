@@ -71,32 +71,44 @@ class SearchingScreen extends StatelessWidget {
                   apartment: "Apartment",
                 ),
                 const SizedBox(height: 10),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 1,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: SearchScreenBodyWidget(
-                        image:
-                            "https://i.postimg.cc/bJKgPdZg/Image-(128-Park-Avenue).png",
-                        baths: "3",
-                        beds: "4",
-                        location: "128 Park Avenue, Melbourne, VIC",
-                        price: "950,000",
-                        leftButtonText: '+Add property',
-                        leftTextColor: AppColors.black,
-                        onTapAddProperty: () {},
-                        borderColorLeft: AppColors.grey,
-                        rightButtonText: 'Use in Calculator',
-                        rightTextColor: AppColors.white,
-                        onTapUseInCalculator: () {},
-                        borderColorRight: AppColors.primary,
-                      ),
-                    );
-                  },
-                ),
+                Obx(() {
+                  if (allPropertiesController.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (allPropertiesController.allPropertiesData.isEmpty) {
+                    return const Center(child: Text("No properties found"));
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: allPropertiesController.allPropertiesData.length,
+                    itemBuilder: (context, index) {
+                      final property =
+                          allPropertiesController.allPropertiesData[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: SearchScreenBodyWidget(
+                          image: property.imageUrl,
+                          baths: property.baths?.toString() ?? "0",
+                          beds: property.beds?.toString() ?? "0",
+                          location: property.address ?? "",
+                          price: property.price?.toString() ?? "",
+                          leftButtonText: '+Add property',
+                          leftTextColor: AppColors.black,
+                          onTapAddProperty: () {},
+                          borderColorLeft: AppColors.grey,
+                          rightButtonText: 'Use in Calculator',
+                          rightTextColor: AppColors.white,
+                          onTapUseInCalculator: () {},
+                          borderColorRight: AppColors.primary,
+                        ),
+                      );
+                    },
+                  );
+                }),
+
                 const SizedBox(height: 40),
               ],
             ),

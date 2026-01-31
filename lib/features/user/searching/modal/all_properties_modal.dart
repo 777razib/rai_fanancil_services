@@ -1,20 +1,18 @@
-// To parse this JSON data, do
-//
-//     final allPropertiesResponse = allPropertiesResponseFromJson(jsonString);
-
 import 'dart:convert';
 
+// JSON parsing helpers
 AllPropertiesResponse allPropertiesResponseFromJson(String str) =>
     AllPropertiesResponse.fromJson(json.decode(str));
 
 String allPropertiesResponseToJson(AllPropertiesResponse data) =>
     json.encode(data.toJson());
 
+// Top-level response
 class AllPropertiesResponse {
   int? statusCode;
   bool? success;
   String? message;
-  AllPropertiesResult? data;
+  AllPropertiesData? data;
   Stats? stats;
 
   AllPropertiesResponse({
@@ -30,7 +28,9 @@ class AllPropertiesResponse {
         statusCode: json["statusCode"],
         success: json["success"],
         message: json["message"],
-        data: json["data"] == null ? null : AllPropertiesResult.fromJson(json["data"]),
+        data: json["data"] == null
+            ? null
+            : AllPropertiesData.fromJson(json["data"]),
         stats: json["stats"] == null ? null : Stats.fromJson(json["stats"]),
       );
 
@@ -43,18 +43,22 @@ class AllPropertiesResponse {
   };
 }
 
-class AllPropertiesResult {
+// Data container (contains meta and list of properties)
+class AllPropertiesData {
   Meta? meta;
-  List<Datum>? data;
+  List<AllPropertiesDatum>? data;
 
-  AllPropertiesResult({this.meta, this.data});
+  AllPropertiesData({this.meta, this.data});
 
-  factory AllPropertiesResult.fromJson(Map<String, dynamic> json) => AllPropertiesResult(
-    meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
-    data: json["data"] == null
-        ? []
-        : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
-  );
+  factory AllPropertiesData.fromJson(Map<String, dynamic> json) =>
+      AllPropertiesData(
+        meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
+        data: json["data"] == null
+            ? []
+            : List<AllPropertiesDatum>.from(
+                json["data"].map((x) => AllPropertiesDatum.fromJson(x)),
+              ),
+      );
 
   Map<String, dynamic> toJson() => {
     "meta": meta?.toJson(),
@@ -64,7 +68,8 @@ class AllPropertiesResult {
   };
 }
 
-class Datum {
+// Single property
+class AllPropertiesDatum {
   int? id;
   int? price;
   String? address;
@@ -76,7 +81,7 @@ class Datum {
   double? roi;
   GrowthRate? growthRate;
 
-  Datum({
+  AllPropertiesDatum({
     this.id,
     this.price,
     this.address,
@@ -89,20 +94,21 @@ class Datum {
     this.growthRate,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-    id: json["id"],
-    price: json["price"],
-    address: json["address"],
-    beds: json["beds"],
-    baths: json["baths"],
-    propertyType: json["property_type"],
-    imageUrl: json["image_url"],
-    isSaved: json["is_saved"],
-    roi: json["roi"]?.toDouble(),
-    growthRate: json["growth_rate"] == null
-        ? null
-        : GrowthRate.fromJson(json["growth_rate"]),
-  );
+  factory AllPropertiesDatum.fromJson(Map<String, dynamic> json) =>
+      AllPropertiesDatum(
+        id: json["id"],
+        price: json["price"],
+        address: json["address"],
+        beds: json["beds"],
+        baths: json["baths"],
+        propertyType: json["property_type"],
+        imageUrl: json["image_url"],
+        isSaved: json["is_saved"],
+        roi: json["roi"]?.toDouble(),
+        growthRate: json["growth_rate"] == null
+            ? null
+            : GrowthRate.fromJson(json["growth_rate"]),
+      );
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -118,6 +124,7 @@ class Datum {
   };
 }
 
+// Growth rate object
 class GrowthRate {
   double? year1;
   double? year5;
@@ -138,6 +145,7 @@ class GrowthRate {
   };
 }
 
+// Meta info
 class Meta {
   int? page;
   int? limit;
@@ -155,6 +163,7 @@ class Meta {
   };
 }
 
+// Stats (empty in your example)
 class Stats {
   Stats();
 
