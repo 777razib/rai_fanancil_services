@@ -56,4 +56,8 @@ class Urls {
       '$_baseUrl/dashboard/user-cashflow-trend?year=$year';
   static String userPropertyValueTrend(String? year) =>
       '$_baseUrl/dashboard/user-property-value-trend?year=$year';
+
+  // saved properties
+  static const String userSavedProperties =
+      '$_baseUrl/properties/my-saved-property';
 }

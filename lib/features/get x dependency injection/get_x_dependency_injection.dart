@@ -1,6 +1,7 @@
 // lib/core/di/dependency_injection.dart
 import 'package:get/get.dart';
 import 'package:rai_fanancil_services/features/user/home/controller/home_dashboard_controller.dart';
+import 'package:rai_fanancil_services/features/user/property/controller/saved_properties_controller.dart';
 
 import '../auth/signin/controller/login_controller.dart';
 import '../auth/signup/controller/signup_api_controller.dart';
@@ -42,5 +43,7 @@ class GetXDependencyInjection extends Bindings {
     );
     // user dashboard
     Get.lazyPut(() => HomeDashboardController(), fenix: true);
+    // user saved properties
+    Get.lazyPut(() => SavedPropertiesController(), fenix: true);
   }
 }
