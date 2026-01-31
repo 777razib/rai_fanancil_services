@@ -62,6 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
 
       // You can modify this part to handle role-based navigation
       if (isLoggedIn == true) {
+
         Get.offAll(()=>UserBottomNavbar());
       } else {
         Get.offAll(() => OnboardingScreen());

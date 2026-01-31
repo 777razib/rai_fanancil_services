@@ -57,7 +57,7 @@ class ProfileApiController extends GetxController {
           );
           Get.to(()=>SetUpYourFinancialProfile());
         }else{
-          Get.offAll(()=>UserBottomNavbar());
+          //Get.offAll(()=>UserBottomNavbar());
         }
 
       } else {
