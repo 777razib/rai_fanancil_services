@@ -1,5 +1,13 @@
+
 import 'package:get/get.dart';
 import 'package:rai_fanancil_services/features/user/home/controller/home_dashboard_controller.dart';
+
+// lib/core/di/dependency_injection.dart
+import 'package:get/get.dart';
+import 'package:rai_fanancil_services/features/user/home/controller/home_dashboard_controller.dart';
+import 'package:rai_fanancil_services/features/user/property/controller/saved_properties_controller.dart';
+import 'package:rai_fanancil_services/features/user/searching/controller/all_properties_controller.dart';
+
 import '../auth/signin/controller/login_controller.dart';
 import '../auth/signup/controller/signup_api_controller.dart';
 import '../auth/text editing controller/custom_text_editing_controller.dart';
