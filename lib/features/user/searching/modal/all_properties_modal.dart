@@ -1,22 +1,23 @@
+// To parse this JSON data, do
+//
+//     final allPropetyResponse = allPropetyResponseFromJson(jsonString);
+
 import 'dart:convert';
 
-// JSON parsing helpers
-AllPropertiesResponse allPropertiesResponseFromJson(String str) =>
-    AllPropertiesResponse.fromJson(json.decode(str));
+AllPropetyResponse allPropetyResponseFromJson(String str) =>
+    AllPropetyResponse.fromJson(json.decode(str));
 
-String allPropertiesResponseToJson(AllPropertiesResponse data) =>
+String allPropetyResponseToJson(AllPropetyResponse data) =>
     json.encode(data.toJson());
 
-// Top-level response
-class AllPropertiesResponse {
-
+class AllPropetyResponse {
   num? statusCode;
   bool? success;
   String? message;
-  AllPropertiesData? data;
+  Data? data;
   Stats? stats;
 
-  AllPropertiesResponse({
+  AllPropetyResponse({
     this.statusCode,
     this.success,
     this.message,
@@ -24,14 +25,12 @@ class AllPropertiesResponse {
     this.stats,
   });
 
-  factory AllPropertiesResponse.fromJson(Map<String, dynamic> json) =>
-      AllPropertiesResponse(
+  factory AllPropetyResponse.fromJson(Map<String, dynamic> json) =>
+      AllPropetyResponse(
         statusCode: json["statusCode"],
         success: json["success"],
         message: json["message"],
-        data: json["data"] == null
-            ? null
-            : AllPropertiesData.fromJson(json["data"]),
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
         stats: json["stats"] == null ? null : Stats.fromJson(json["stats"]),
       );
 
@@ -44,22 +43,18 @@ class AllPropertiesResponse {
   };
 }
 
-// Data container (contains meta and list of properties)
-class AllPropertiesData {
+class Data {
   Meta? meta;
-  List<AllPropertiesDatum>? data;
+  List<AllPropertyResult>? data;
 
-  AllPropertiesData({this.meta, this.data});
+  Data({this.meta, this.data});
 
-  factory AllPropertiesData.fromJson(Map<String, dynamic> json) =>
-      AllPropertiesData(
-        meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
-        data: json["data"] == null
-            ? []
-            : List<AllPropertiesDatum>.from(
-                json["data"].map((x) => AllPropertiesDatum.fromJson(x)),
-              ),
-      );
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    meta: json["meta"] == null ? null : Meta.fromJson(json["meta"]),
+    data: json["data"] == null
+        ? []
+        : List<AllPropertyResult>.from(json["data"]!.map((x) => AllPropertyResult.fromJson(x))),
+  );
 
   Map<String, dynamic> toJson() => {
     "meta": meta?.toJson(),
@@ -69,8 +64,7 @@ class AllPropertiesData {
   };
 }
 
-// Single property
-class AllPropertiesDatum {
+class AllPropertyResult {
   num? id;
   num? price;
   String? address;
@@ -82,7 +76,7 @@ class AllPropertiesDatum {
   double? roi;
   GrowthRate? growthRate;
 
-  AllPropertiesDatum({
+  AllPropertyResult({
     this.id,
     this.price,
     this.address,
@@ -95,21 +89,20 @@ class AllPropertiesDatum {
     this.growthRate,
   });
 
-  factory AllPropertiesDatum.fromJson(Map<String, dynamic> json) =>
-      AllPropertiesDatum(
-        id: json["id"],
-        price: json["price"],
-        address: json["address"],
-        beds: json["beds"],
-        baths: json["baths"],
-        propertyType: json["property_type"],
-        imageUrl: json["image_url"],
-        isSaved: json["is_saved"],
-        roi: json["roi"]?.toDouble(),
-        growthRate: json["growth_rate"] == null
-            ? null
-            : GrowthRate.fromJson(json["growth_rate"]),
-      );
+  factory AllPropertyResult.fromJson(Map<String, dynamic> json) => AllPropertyResult(
+    id: json["id"],
+    price: json["price"],
+    address: json["address"],
+    beds: json["beds"],
+    baths: json["baths"],
+    propertyType: json["property_type"],
+    imageUrl: json["image_url"],
+    isSaved: json["is_saved"],
+    roi: json["roi"]?.toDouble(),
+    growthRate: json["growth_rate"] == null
+        ? null
+        : GrowthRate.fromJson(json["growth_rate"]),
+  );
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -125,7 +118,6 @@ class AllPropertiesDatum {
   };
 }
 
-// Growth rate object
 class GrowthRate {
   double? year1;
   double? year5;
@@ -146,7 +138,6 @@ class GrowthRate {
   };
 }
 
-// Meta info
 class Meta {
   num? page;
   num? limit;
@@ -164,7 +155,6 @@ class Meta {
   };
 }
 
-// Stats (empty in your example)
 class Stats {
   Stats();
 
