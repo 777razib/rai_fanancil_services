@@ -10,7 +10,7 @@ class AllPropertiesController extends GetxController {
   String token =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmRiYzU5ZmFhN2U2MmM4OTk0Mzk3NiIsImVtYWlsIjoicmFmc2Fuc2F5ZWQxMzJAZ21haWwuY29tIiwicm9sZSI6IlVzZXIiLCJlbWFpbFZlcmlmaWNhdGlvbiI6dHJ1ZSwiaXNGaW5hbmNpYWxQcm9maWxlQ29tcGxldGUiOnRydWUsImlhdCI6MTc2OTg0MTYzOCwiZXhwIjoxODAxMzc3NjM4fQ.Ci57ZPiOMWraRRd4XcAQZBnv5Yj4vFGLpyiBkixkIRo";
 
-  final allPropertiesData = <AllPropertiesDatum>[].obs;
+  final allPropertiesData = <AllPropertyResult>[].obs;
   Meta? meta; // store pagination info if needed
 
   @override
@@ -24,20 +24,23 @@ class AllPropertiesController extends GetxController {
       isLoading.value = true;
       final response = await networkCaller.getRequest(
         Urls.allProperties,
-        token: token,
+        // token: token,
       );
 
-      log(response.responseData.toString());
+      // log(response.responseData.toString());
+      log("responseData type = ${response.responseData.runtimeType}");
 
       if (response.statusCode == 200 || response.isSuccess) {
-        final parsed = AllPropertiesResponse.fromJson(
-          response.responseData as Map<String, dynamic>,
-        );
+        log(response.responseData.toString());
 
-        allPropertiesData.assignAll(parsed.data?.data ?? []);
-        // meta = parsed.data?.meta;
-      } else {
-        log("Error: ${response.errorMessage}");
+        // ✅ responseData is already the { meta: {...}, data: [...] } object
+        final data = Data.fromJson(response.responseData);
+
+        log(data.runtimeType.toString());
+        allPropertiesData.assignAll(data.data ?? []);
+        log('$allPropertiesData');
+
+        Get.snackbar('Success', 'Loaded ${data.data?.length ?? 0} properties');
       }
     } catch (e) {
       log("Fetching all error: $e");
