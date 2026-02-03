@@ -94,7 +94,6 @@ class SignupOtpController extends GetxController {
         body: mapBody,
       );
 
-      developer.log("================== VERIFY OTP API RESPONSE ==================", name: 'SignupOtpController');
       developer.log("Status Code: ${response.statusCode}", name: 'SignupOtpController');
       developer.log("Is Success: ${response.isSuccess}", name: 'SignupOtpController');
       developer.log("Response Body: ${response.responseData}", name: 'SignupOtpController');

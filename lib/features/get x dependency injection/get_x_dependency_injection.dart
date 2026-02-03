@@ -1,3 +1,7 @@
+
+import 'package:get/get.dart';
+import 'package:rai_fanancil_services/features/user/home/controller/home_dashboard_controller.dart';
+
 // lib/core/di/dependency_injection.dart
 import 'package:get/get.dart';
 import 'package:rai_fanancil_services/features/user/home/controller/home_dashboard_controller.dart';
@@ -10,6 +14,8 @@ import '../auth/text editing controller/custom_text_editing_controller.dart';
 import '../user/financial calculators/property investment/controller/select_custom_button_controller.dart';
 import '../user/profile/my_profile/controller/edit_profile_controller.dart';
 import '../user/profile/my_profile/controller/my_profile_controller.dart';
+import '../user/property/controller/saved_properties_controller.dart';
+import '../user/searching/controller/all_properties_controller.dart';
 import '../user/searching/searching filter/controller/pricing_controller.dart';
 import '../user/user navbar/controller/navbar_controller.dart';
 
@@ -20,7 +26,6 @@ class GetXDependencyInjection extends Bindings {
     Get.lazyPut(() => CustomTextEditingController(), fenix: true);
 
     // ====== Auth ======
-    Get.lazyPut(() => LoginApiController(), fenix: true);
     Get.lazyPut(() => SignupApiController(), fenix: true);
 
     // ====== Home & Search ======

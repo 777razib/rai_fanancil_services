@@ -26,6 +26,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
 
   Timer? _timer;
   int _secondsRemaining = 60;
+  bool isVerifying = false;
 
   @override
   void initState() {
@@ -78,15 +79,17 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
       context: context,
       builder: (BuildContext context) {
         return CustomPopup(
-          customText: 'Your account has been created successfully! You can now continue and start exploring all the features.',
+          customText:
+          'Your account has been created successfully! You can now continue and start exploring all the features.',
           buttonText: 'Go to Sign in page',
-          onButtonPressed: () {
-            Get.to((LoginScreen()));
+          onButtonPressed: () async {
+            Get.to(LoginScreen());
           },
         );
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -206,15 +209,21 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: CustomFloatingButton(
-                                onPressed: () {
-                                  final code = _otpCode;
-                                  // TODO: hook this to API / logic
-                                  debugPrint('Entered OTP: $code');
-                                  _showVerificationPopup(
-                                    context,
-                                  ); // Show the custom popup
+                                isLoading: isVerifying,
+                                onPressed: () async {
+                                  if (isVerifying) return;
+
+                                  setState(() => isVerifying = true);
+                                  try {
+                                    final code = _otpCode;
+                                    debugPrint('Entered OTP: $code');
+
+                                    _showVerificationPopup(context);
+                                  } finally {
+                                    setState(() => isVerifying = false);
+                                  }
                                 },
-                                buttonText: 'Verify',
+                                buttonText: isVerifying ? 'Verifying...' : 'Verify',
                               ),
                             ),
                           ],

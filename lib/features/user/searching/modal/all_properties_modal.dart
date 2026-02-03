@@ -9,7 +9,8 @@ String allPropertiesResponseToJson(AllPropertiesResponse data) =>
 
 // Top-level response
 class AllPropertiesResponse {
-  int? statusCode;
+
+  num? statusCode;
   bool? success;
   String? message;
   AllPropertiesData? data;
@@ -70,11 +71,11 @@ class AllPropertiesData {
 
 // Single property
 class AllPropertiesDatum {
-  int? id;
-  int? price;
+  num? id;
+  num? price;
   String? address;
-  int? beds;
-  int? baths;
+  num? beds;
+  num? baths;
   String? propertyType;
   String? imageUrl;
   bool? isSaved;
@@ -147,9 +148,9 @@ class GrowthRate {
 
 // Meta info
 class Meta {
-  int? page;
-  int? limit;
-  int? total;
+  num? page;
+  num? limit;
+  num? total;
 
   Meta({this.page, this.limit, this.total});
 
