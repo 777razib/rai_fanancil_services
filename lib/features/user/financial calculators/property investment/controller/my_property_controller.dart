@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../../../../core/network_path/natwork_path.dart';
 import '../models/my_property_model.dart';
 
-class PropertyController extends GetxController {
+class MyPropertyController extends GetxController {
   // ✅ Single property response (API returns ONE object)
   final Rxn<MyPropertyModel> property = Rxn<MyPropertyModel>();
 

@@ -3,23 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rai_fanancil_services/features/user/searching/controller/all_properties_controller.dart';
 import '../../../../core/themes/app_colors.dart';
-import '../searching filter/screen/searching_filter_screen.dart';
 import '../widget/search_screen_body_widget.dart';
-import '../widget/searching_body_head_widget.dart';
 
-class SearchingScreen extends StatefulWidget {
-  const SearchingScreen({super.key});
+class FilterSearchingResultScreen extends StatefulWidget {
+  const FilterSearchingResultScreen({super.key});
 
   @override
-  State<SearchingScreen> createState() => _SearchingScreenState();
+  State<FilterSearchingResultScreen> createState() =>
+      _FilterSearchingResultScreenState();
 }
 
-class _SearchingScreenState extends State<SearchingScreen> {
+class _FilterSearchingResultScreenState extends State<FilterSearchingResultScreen> {
   final AllPropertiesController allPropertiesController = Get.find();
 
   final ScrollController _scrollController = ScrollController();
-
-  // ✅ realtime search
   final TextEditingController _searchCtrl = TextEditingController();
   Timer? _debounce;
 
@@ -27,7 +24,6 @@ class _SearchingScreenState extends State<SearchingScreen> {
   void initState() {
     super.initState();
 
-    // ✅ load more when reaching bottom
     _scrollController.addListener(() async {
       final position = _scrollController.position;
       if (position.pixels >= position.maxScrollExtent - 200) {
@@ -35,18 +31,14 @@ class _SearchingScreenState extends State<SearchingScreen> {
       }
     });
 
-    // ✅ realtime search listener
     _searchCtrl.addListener(_onSearchChanged);
   }
 
   void _onSearchChanged() {
-    // debounce so API doesn't spam
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       final term = _searchCtrl.text.trim();
-
-      // ✅ this method should trigger API reload (page=1)
       await allPropertiesController.setSearchTerm(term);
     });
   }
@@ -69,47 +61,16 @@ class _SearchingScreenState extends State<SearchingScreen> {
         centerTitle: true,
         title: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Property Search',
+          children: const [
+            Text(
+              'Properties',
               style: TextStyle(color: AppColors.white, fontSize: 22),
-            ),
-            const SizedBox(height: 12),
-
-            // ✅ UI same: Search + Filter icon
-            SizedBox(
-              width: double.infinity,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _SearchField(
-                      controller: _searchCtrl,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      Get.to(() => SearchingFilterScreen());
-                    },
-                    child: SizedBox(
-                      height: 46,
-                      width: 46,
-                      child: Image.asset(
-                        "assets/icons/Scan.png",
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: () {
-          return allPropertiesController.refreshProperties();
-        },
+        onRefresh: () => allPropertiesController.refreshProperties(),
         color: AppColors.primary,
         child: SingleChildScrollView(
           controller: _scrollController,
@@ -118,15 +79,8 @@ class _SearchingScreenState extends State<SearchingScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                SearchingBodyHeadWidget(
-                  price1: "500",
-                  price2: "1",
-                  apartment: "Apartment",
-                ),
-                const SizedBox(height: 10),
 
                 Obx(() {
-                  // first loading
                   if (allPropertiesController.isLoading.value &&
                       allPropertiesController.properties.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
@@ -146,8 +100,7 @@ class _SearchingScreenState extends State<SearchingScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: allPropertiesController.properties.length,
                         itemBuilder: (context, index) {
-                          final property =
-                          allPropertiesController.properties[index];
+                          final property = allPropertiesController.properties[index];
 
                           return Padding(
                             padding: const EdgeInsets.all(4.0),
@@ -174,7 +127,6 @@ class _SearchingScreenState extends State<SearchingScreen> {
                         },
                       ),
 
-                      // load more loader
                       if (allPropertiesController.isLoading.value)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
@@ -194,35 +146,3 @@ class _SearchingScreenState extends State<SearchingScreen> {
   }
 }
 
-/// ✅ Search input (keeps same UI height/shape)
-class _SearchField extends StatelessWidget {
-  final TextEditingController controller;
-  const _SearchField({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 46,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(0),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.search, color: Colors.grey),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: "Search property...",
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
